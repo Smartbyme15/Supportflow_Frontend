@@ -6,8 +6,10 @@ import {
   Ticket, 
   PlusCircle,
   BarChart3,
+  Bot,
   LogOut
 } from 'lucide-react';
+import logo from '../assets/images/logo.png';
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen }) => {
@@ -18,12 +20,14 @@ const Sidebar = ({ isOpen }) => {
   const customerLinks = [
     { to: '/customer/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/customer/tickets/new', icon: PlusCircle, label: 'New Ticket' },
+    { to: '/customer/ai-chat', icon: Bot, label: 'AI Assistant' },
   ];
 
   const agentLinks = [
     { to: '/agent/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/agent/tickets', icon: Ticket, label: 'All Tickets' },
     { to: '/agent/analytics', icon: BarChart3, label: 'Analytics' },
+    { to: '/agent/ai-chat', icon: Bot, label: 'AI Assistant' },
   ];
 
   const links = isAgent ? agentLinks : customerLinks;
@@ -33,8 +37,8 @@ const Sidebar = ({ isOpen }) => {
       <div className="sidebar-content">
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <span className="brand-icon">🚀</span>
-            <span className="brand-text">SupportFlow</span>
+            <img src={logo} alt="AssistFlow" className="sidebar-logo" />
+            <span className="brand-text">AssistFlow</span>
           </div>
         </div>
 

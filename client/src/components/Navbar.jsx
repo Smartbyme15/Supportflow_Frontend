@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  Menu, X, LogOut, User, LayoutDashboard, Ticket, PlusCircle 
-} from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
+import logo from '../assets/images/logo.png';
 import './Navbar.css';
 
 const Navbar = ({ sidebarOpen, toggleSidebar }) => {
@@ -22,8 +21,8 @@ const Navbar = ({ sidebarOpen, toggleSidebar }) => {
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
         <div className="navbar-brand">
-          <span className="brand-icon">🚀</span>
-          <span className="brand-text">SupportFlow</span>
+          <img src={logo} alt="AssistFlow" className="navbar-logo" />
+          <span className="brand-text">AssistFlow</span>
         </div>
       </div>
 

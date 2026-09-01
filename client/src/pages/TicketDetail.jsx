@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { io } from 'socket.io-client';
-import './Dashboard.css';
+import { ArrowLeft, Send, Bot, User, CheckCircle, AlertCircle } from 'lucide-react';
+import './TicketDetail.css';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 
 const TicketDetail = () => {
   const { id } = useParams();
@@ -17,44 +18,44 @@ const TicketDetail = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
-  const [statusUpdate, setStatusUpdate] = useState('');
-  const [resolutionNote, setResolutionNote] = useState('');
-  const [showResolution, setShowResolution] = useState(false);
-  
-  const socketRef = useRef(null);
+  const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
+  const isAgent = user?.role === 'agent';
 
   useEffect(() => {
     fetchTicketDetails();
     fetchMessages();
 
-    // Setup socket
+    // Setup Socket.IO
     const token = localStorage.getItem('token');
-    socketRef.current = io(SOCKET_URL, {
+    const newSocket = io(SOCKET_URL, {
       auth: { token },
+      transports: ['websocket', 'polling'],
     });
 
-    socketRef.current.on('connect', () => {
+    newSocket.on('connect', () => {
       console.log('Socket connected');
-      socketRef.current.emit('joinTicket', id);
+      newSocket.emit('joinTicket', id);
     });
 
-    socketRef.current.on('newMessage', (data) => {
+    newSocket.on('newMessage', (data) => {
       if (data.ticketId === id) {
         setMessages(prev => [...prev, data.message]);
       }
     });
 
-    socketRef.current.on('ticketStatusChanged', (data) => {
+    newSocket.on('ticketStatusChanged', (data) => {
       if (data.ticketId === id) {
         setTicket(prev => ({ ...prev, status: data.status, resolutionNote: data.resolutionNote }));
       }
     });
 
+    setSocket(newSocket);
+
     return () => {
-      if (socketRef.current) {
-        socketRef.current.emit('leaveTicket', id);
-        socketRef.current.disconnect();
+      if (newSocket) {
+        newSocket.emit('leaveTicket', id);
+        newSocket.disconnect();
       }
     };
   }, [id]);
@@ -113,236 +114,179 @@ const TicketDetail = () => {
     }
   };
 
-  const updateStatus = async (newStatus) => {
-    if (newStatus === 'Resolved' && !resolutionNote.trim()) {
-      setShowResolution(true);
-      return;
-    }
-
-    try {
-      const payload = { status: newStatus };
-      if (newStatus === 'Resolved') {
-        payload.resolutionNote = resolutionNote.trim();
-      }
-      
-      await api.patch(`/tickets/${id}/status`, payload);
-      setStatusUpdate('');
-      setResolutionNote('');
-      setShowResolution(false);
-      // Socket will update the status
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update status');
-    }
-  };
-
-  const reviewAI = async (category, priority, summary) => {
-    try {
-      await api.patch(`/tickets/${id}/ai-review`, { category, priority, summary });
-      await fetchTicketDetails();
-    } catch (err) {
-      setError('Failed to review AI suggestion');
-    }
-  };
-
   const getStatusColor = (status) => {
     const colors = {
-      'New': 'status-new',
-      'Assigned': 'status-assigned',
-      'In Progress': 'status-progress',
-      'Resolved': 'status-resolved',
+      'New': '#63b3ed',
+      'Assigned': '#ecc94b',
+      'In Progress': '#ed8936',
+      'Resolved': '#48bb78',
     };
-    return colors[status] || 'status-new';
+    return colors[status] || '#a0aec0';
   };
 
   const getPriorityColor = (priority) => {
     const colors = {
-      'Low': 'priority-low',
-      'Medium': 'priority-medium',
-      'High': 'priority-high',
+      'Low': '#a0aec0',
+      'Medium': '#ed8936',
+      'High': '#fc8181',
     };
-    return colors[priority] || 'priority-medium';
+    return colors[priority] || '#a0aec0';
   };
 
   if (loading) {
     return (
-      <div className="dashboard-container">
+      <div className="ticket-detail-container">
         <div className="loading-spinner"></div>
-        <p>Loading...</p>
+        <p style={{ textAlign: 'center', color: '#a0aec0' }}>Loading ticket...</p>
       </div>
     );
   }
 
   if (!ticket) {
     return (
-      <div className="dashboard-container">
+      <div className="ticket-detail-container">
         <div className="error-message">Ticket not found</div>
         <button onClick={() => navigate(-1)} className="btn-secondary">Go Back</button>
       </div>
     );
   }
 
-  const isCustomer = user?.role === 'customer';
-  const isAgent = user?.role === 'agent';
-  const canEdit = isAgent && ticket.assignedAgent?._id === user._id;
-
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <div>
-          <h1>{ticket.ticketNumber}</h1>
-          <p className="subtitle">{ticket.subject}</p>
-        </div>
-        <button onClick={() => navigate(isCustomer ? '/customer/dashboard' : '/agent/dashboard')} className="btn-secondary">
+    <div className="ticket-detail-container">
+      {/* Header */}
+      <div className="ticket-detail-header">
+        <button onClick={() => navigate(-1)} className="back-btn">
+          <ArrowLeft size={20} />
           Back
         </button>
+        <div className="ticket-detail-title">
+          <h1>{ticket.ticketNumber}</h1>
+          <p>{ticket.subject}</p>
+        </div>
+        <div className="ticket-detail-badges">
+          <span 
+            className="status-badge-lg"
+            style={{ background: getStatusColor(ticket.status) + '20', color: getStatusColor(ticket.status) }}
+          >
+            {ticket.status}
+          </span>
+          <span 
+            className="priority-badge-lg"
+            style={{ background: getPriorityColor(ticket.priority) + '20', color: getPriorityColor(ticket.priority) }}
+          >
+            {ticket.priority}
+          </span>
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="ticket-detail-grid">
-        <div className="ticket-info-card">
-          <div className="info-row">
-            <span className="label">Status</span>
-            <span className={`status-badge ${getStatusColor(ticket.status)}`}>
-              {ticket.status}
-            </span>
-          </div>
-          <div className="info-row">
-            <span className="label">Priority</span>
-            <span className={`priority-badge ${getPriorityColor(ticket.priority)}`}>
-              {ticket.priority}
-            </span>
-          </div>
-          <div className="info-row">
-            <span className="label">Category</span>
-            <span>{ticket.category}</span>
-          </div>
-          <div className="info-row">
-            <span className="label">Customer</span>
-            <span>{ticket.customer?.name}</span>
-          </div>
-          <div className="info-row">
-            <span className="label">Agent</span>
-            <span>{ticket.assignedAgent?.name || 'Not assigned'}</span>
-          </div>
-          {ticket.resolutionNote && (
-            <div className="info-row">
-              <span className="label">Resolution Note</span>
-              <span>{ticket.resolutionNote}</span>
-            </div>
-          )}
+      {/* Ticket Info */}
+      <div className="ticket-info-grid">
+        <div className="ticket-info-item">
+          <span className="info-label">Category</span>
+          <span className="info-value">{ticket.category || 'Other'}</span>
         </div>
-
-        {isAgent && canEdit && ticket.aiSuggestion && !ticket.aiSuggestion.reviewed && (
-          <div className="ai-card">
-            <h3>🤖 AI Suggestion</h3>
-            {ticket.aiSuggestion.error ? (
-              <p className="ai-error">AI analysis unavailable: {ticket.aiSuggestion.error}</p>
-            ) : (
-              <>
-                <div className="ai-field">
-                  <label>Category</label>
-                  <span>{ticket.aiSuggestion.category}</span>
-                </div>
-                <div className="ai-field">
-                  <label>Priority</label>
-                  <span>{ticket.aiSuggestion.priority}</span>
-                </div>
-                <div className="ai-field">
-                  <label>Summary</label>
-                  <span>{ticket.aiSuggestion.summary}</span>
-                </div>
-                <button
-                  onClick={() => reviewAI(
-                    ticket.aiSuggestion.category,
-                    ticket.aiSuggestion.priority,
-                    ticket.aiSuggestion.summary
-                  )}
-                  className="btn-primary"
-                >
-                  Apply AI Suggestion
-                </button>
-              </>
-            )}
-          </div>
-        )}
-
-        {isAgent && canEdit && ticket.status !== 'Resolved' && (
-          <div className="status-controls">
-            <h3>Update Status</h3>
-            <div className="status-buttons">
-              {['New', 'Assigned', 'In Progress', 'Resolved'].map(status => (
-                <button
-                  key={status}
-                  onClick={() => {
-                    setStatusUpdate(status);
-                    if (status === 'Resolved') {
-                      setShowResolution(true);
-                    } else {
-                      updateStatus(status);
-                    }
-                  }}
-                  className={`btn-status ${ticket.status === status ? 'active' : ''}`}
-                  disabled={ticket.status === 'Resolved' && status !== 'Resolved'}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
-            {showResolution && (
-              <div className="resolution-input">
-                <textarea
-                  placeholder="Resolution note (required)"
-                  value={resolutionNote}
-                  onChange={(e) => setResolutionNote(e.target.value)}
-                  rows={3}
-                />
-                <div className="resolution-actions">
-                  <button
-                    onClick={() => updateStatus('Resolved')}
-                    className="btn-primary"
-                    disabled={!resolutionNote.trim()}
-                  >
-                    Resolve Ticket
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowResolution(false);
-                      setResolutionNote('');
-                      setStatusUpdate('');
-                    }}
-                    className="btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="ticket-info-item">
+          <span className="info-label">Customer</span>
+          <span className="info-value">{ticket.customer?.name}</span>
+        </div>
+        <div className="ticket-info-item">
+          <span className="info-label">Agent</span>
+          <span className="info-value">{ticket.assignedAgent?.name || 'Not assigned'}</span>
+        </div>
+        <div className="ticket-info-item">
+          <span className="info-label">Created</span>
+          <span className="info-value">{new Date(ticket.createdAt).toLocaleDateString()}</span>
+        </div>
       </div>
 
-      <div className="chat-section">
+      {/* Description */}
+      <div className="ticket-description-section">
+        <h3>Description</h3>
+        <p>{ticket.description}</p>
+      </div>
+
+      {/* AI Suggestion */}
+      {ticket.aiSuggestion && !ticket.aiSuggestion.error && (
+        <div className="ai-suggestion-card">
+          <div className="ai-suggestion-header">
+            <Bot size={18} />
+            <span>AI Triage Suggestion</span>
+          </div>
+          <div className="ai-suggestion-grid">
+            <div>
+              <label>Category</label>
+              <span>{ticket.aiSuggestion.category}</span>
+            </div>
+            <div>
+              <label>Priority</label>
+              <span>{ticket.aiSuggestion.priority}</span>
+            </div>
+            <div className="full-width">
+              <label>Summary</label>
+              <span>{ticket.aiSuggestion.summary}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Resolution Note */}
+      {ticket.resolutionNote && (
+        <div className="resolution-section">
+          <div className="resolution-header">
+            <CheckCircle size={18} color="#48bb78" />
+            <span>Resolution Note</span>
+          </div>
+          <p>{ticket.resolutionNote}</p>
+        </div>
+      )}
+
+      {/* Conversation */}
+      <div className="conversation-section">
         <h3>Conversation</h3>
         <div className="message-list">
           {messages.length === 0 ? (
-            <p className="empty-messages">No messages yet</p>
+            <div className="empty-messages">
+              <p>No messages yet</p>
+              <span>Start the conversation by sending a message</span>
+            </div>
           ) : (
-            messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`message ${msg.sender._id === user._id ? 'message-own' : 'message-other'}`}
-              >
-                <div className="message-header">
-                  <strong>{msg.sender.name}</strong>
-                  <span className="message-role">({msg.sender.role})</span>
-                  <span className="message-time">
-                    {new Date(msg.createdAt).toLocaleTimeString()}
-                  </span>
+            messages.map((msg) => {
+              const isOwn = msg.sender._id === user._id;
+              const isAgentMsg = msg.sender.role === 'agent';
+              
+              return (
+                <div
+                  key={msg._id}
+                  className={`message-item ${isOwn ? 'message-own' : 'message-other'} ${isAgentMsg ? 'message-agent' : 'message-customer'}`}
+                >
+                  <div className="message-avatar">
+                    {isAgentMsg ? (
+                      <div className="avatar-agent">
+                        <Bot size={16} />
+                      </div>
+                    ) : (
+                      <div className="avatar-customer">
+                        <User size={16} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="message-content">
+                    <div className="message-header">
+                      <span className="message-sender">
+                        {msg.sender.name}
+                        <span className="message-role">({msg.sender.role})</span>
+                      </span>
+                      <span className="message-time">
+                        {new Date(msg.createdAt).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <div className="message-text">{msg.message}</div>
+                  </div>
                 </div>
-                <div className="message-body">{msg.message}</div>
-              </div>
-            ))
+              );
+            })
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -353,15 +297,18 @@ const TicketDetail = () => {
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={isAgent ? "Type your reply..." : "Type your message..."}
               disabled={sending}
             />
             <button type="submit" disabled={sending || !newMessage.trim()}>
-              {sending ? 'Sending...' : 'Send'}
+              <Send size={18} />
             </button>
           </form>
         ) : (
-          <p className="resolved-message">This ticket is resolved. Cannot send new messages.</p>
+          <div className="resolved-message">
+            <CheckCircle size={18} />
+            This ticket is resolved. Cannot send new messages.
+          </div>
         )}
       </div>
     </div>

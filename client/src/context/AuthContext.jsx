@@ -3,23 +3,18 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Set up axios interceptor for token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
-  }, []);
-
-  // Load user on mount
-  useEffect(() => {
     loadUser();
   }, []);
 
@@ -31,17 +26,8 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
       const response = await axios.get(`${API_URL}/auth/me`);
-      const userData = response.data.user;
-      
-      // Fix: If role is "user" or undefined, set default role
-      if (!userData.role || userData.role === 'user') {
-        userData.role = 'customer'; // Default to customer
-      }
-      
-      setUser(userData);
+      setUser(response.data.user);
     } catch (error) {
       console.error('Load user error:', error);
       localStorage.removeItem('token');
@@ -60,19 +46,11 @@ export const AuthProvider = ({ children }) => {
       const { token, user } = response.data;
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      // Fix role if needed
-      if (!user.role || user.role === 'user') {
-        user.role = 'customer';
-      }
-      
       setUser(user);
       
       return { success: true, user };
     } catch (error) {
-      const errorMessage = error.response?.data?.error || 
-                          error.response?.data?.errors?.[0] || 
-                          'Registration failed';
+      const errorMessage = error.response?.data?.error || 'Registration failed';
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }
@@ -86,12 +64,6 @@ export const AuthProvider = ({ children }) => {
       const { token, user } = response.data;
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      // Fix role if needed
-      if (!user.role || user.role === 'user') {
-        user.role = 'customer';
-      }
-      
       setUser(user);
       
       return { success: true, user };

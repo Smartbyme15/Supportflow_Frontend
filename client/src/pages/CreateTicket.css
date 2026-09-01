@@ -1,0 +1,535 @@
+.create-ticket-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #0d0d0d;
+  min-height: calc(100vh - 64px);
+}
+
+.create-ticket-header {
+  margin-bottom: 32px;
+}
+
+.create-ticket-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin: 12px 0 4px;
+}
+
+.create-ticket-header .subtitle {
+  color: #a0aec0;
+  font-size: 0.95rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: #355E3B;
+}
+
+.error-banner {
+  background: #3d1a1a;
+  color: #fc8181;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #5a2a2a;
+}
+
+.create-ticket-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.ticket-form-main {
+  background: #141414;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  padding: 28px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.form-section-header h3 {
+  color: #e0e0e0;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.form-section-header svg {
+  color: #355E3B;
+}
+
+.form-hint {
+  color: #666;
+  font-size: 0.8rem;
+  margin: 0 0 8px 0;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #355E3B;
+  box-shadow: 0 0 0 3px rgba(53, 94, 59, 0.15);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-section.half {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* File Upload */
+.file-upload-area {
+  position: relative;
+  margin-top: 8px;
+}
+
+.file-upload-area input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: #1a1a1a;
+  border: 2px dashed #2a2a2a;
+  border-radius: 10px;
+  color: #a0aec0;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.file-upload-label:hover {
+  border-color: #355E3B;
+  background: #1f1f1f;
+}
+
+.file-upload-label svg {
+  color: #355E3B;
+  margin-bottom: 8px;
+}
+
+.file-upload-label span {
+  font-size: 0.85rem;
+}
+
+.file-types {
+  font-size: 0.7rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+.file-list {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a1a1a;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #2a2a2a;
+}
+
+.file-name {
+  color: #e0e0e0;
+  font-size: 0.8rem;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  color: #666;
+  font-size: 0.7rem;
+}
+
+.file-remove {
+  background: none;
+  border: none;
+  color: #fc8181;
+  cursor: pointer;
+  padding: 2px;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #355E3B;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #2a4d2f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(53, 94, 59, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Sidebar */
+.ticket-form-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.help-section {
+  background: #141414;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  padding: 20px;
+}
+
+.help-section h3 {
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+}
+
+.help-section p {
+  color: #a0aec0;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.tips-section {
+  background: #141414;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  padding: 20px;
+}
+
+.tips-section h4 {
+  color: #e0e0e0;
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+}
+
+.tips-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tips-section ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.tips-section ul li:last-child {
+  border-bottom: none;
+}
+
+.tips-section ul li strong {
+  display: block;
+  color: #e0e0e0;
+  font-size: 0.85rem;
+}
+
+.tips-section ul li span {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.how-it-works {
+  background: #141414;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  padding: 20px;
+}
+
+.how-it-works h4 {
+  color: #e0e0e0;
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1a2a1f;
+  color: #355E3B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.step div {
+  display: flex;
+  flex-direction: column;
+}
+
+.step strong {
+  color: #e0e0e0;
+  font-size: 0.85rem;
+}
+
+.step span {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.footer-note {
+  text-align: center;
+  color: #444;
+  font-size: 0.7rem;
+  padding: 8px 0;
+}
+
+/* Success State */
+.ticket-success {
+  max-width: 600px;
+  margin: 60px auto;
+  text-align: center;
+  background: #141414;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  padding: 48px;
+}
+
+.success-icon {
+  margin-bottom: 16px;
+}
+
+.ticket-success h2 {
+  color: #e0e0e0;
+  font-size: 1.8rem;
+  margin: 0 0 8px;
+}
+
+.ticket-number-display {
+  color: #a0aec0;
+  font-size: 1.1rem;
+}
+
+.ticket-number-display strong {
+  color: #355E3B;
+  font-size: 1.3rem;
+}
+
+.ai-preview-success {
+  background: #1a2a1f;
+  border: 1px solid #355E3B;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.ai-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #355E3B;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.ai-preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ai-preview-grid div label {
+  display: block;
+  color: #666;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-preview-grid div span {
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.ai-preview-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.redirect-note {
+  color: #666;
+  font-size: 0.85rem;
+  margin: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .create-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ticket-form-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-ticket-container {
+    padding: 16px;
+  }
+  
+  .create-ticket-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .ticket-form-main {
+    padding: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .ticket-form-sidebar {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-preview-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-preview-grid .full-width {
+    grid-column: 1;
+  }
+  
+  .ticket-success {
+    padding: 32px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-ticket-header h1 {
+    font-size: 1.2rem;
+  }
+  
+  .ticket-form-main {
+    padding: 16px;
+  }
+  
+  .file-upload-label {
+    padding: 20px 16px;
+  }
+  
+  .file-upload-label span {
+    font-size: 0.75rem;
+  }
+}

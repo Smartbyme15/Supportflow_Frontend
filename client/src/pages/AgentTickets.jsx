@@ -87,6 +87,7 @@ const AgentTickets = () => {
     return (
       <div className="dashboard-container">
         <div className="loading-spinner"></div>
+        <p style={{ textAlign: 'center', color: '#a0aec0' }}>Loading tickets...</p>
       </div>
     );
   }
@@ -103,7 +104,6 @@ const AgentTickets = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Filters */}
       <div className="ticket-filters">
         <div className="search-box">
           <Search size={18} />
@@ -145,7 +145,6 @@ const AgentTickets = () => {
         </div>
       </div>
 
-      {/* Ticket Table */}
       {filteredTickets.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📋</div>

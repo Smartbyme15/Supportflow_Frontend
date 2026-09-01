@@ -127,3 +127,24 @@
     font-size: 1rem;
   }
 }
+/* Add to Navbar.css */
+.navbar-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.brand-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #355E3B;
+  letter-spacing: -0.5px;
+}
