@@ -148,3 +148,25 @@
   color: #355E3B;
   letter-spacing: -0.5px;
 }
+.navbar-home-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a0aec0;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.navbar-home-link:hover {
+  background: #2a2a2a;
+  color: #355E3B;
+}
+
+@media (max-width: 768px) {
+  .navbar-home-link span {
+    display: none;
+  }
+}

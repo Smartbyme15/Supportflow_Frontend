@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
   Menu, X, ArrowRight, Bot, Shield, MessageSquare, 
   BarChart3, Clock, Users, Ticket, Sparkles, 
-  CheckCircle, Zap, Lock, TrendingUp, Send
+  CheckCircle, Zap, Lock, TrendingUp, Crown
 } from 'lucide-react';
 import logo from '../assets/images/logo.png';
 import './Home.css';
@@ -17,32 +17,22 @@ const Home = () => {
   const featuresRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToFeatures = () => {
-    featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToFeatures = () => featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+  const getDashboardRoute = () => {
+    if (!isAuthenticated) return '/register';
+    if (user?.role === 'admin') return '/admin/dashboard';
+    if (user?.role === 'agent') return '/agent/dashboard';
+    return '/customer/dashboard';
   };
 
-  const handleGetStarted = () => {
-    if (isAuthenticated) {
-      navigate(user?.role === 'agent' ? '/agent/dashboard' : '/customer/dashboard');
-    } else {
-      navigate('/register');
-    }
-  };
-
-  const handleLogin = () => {
-    if (isAuthenticated) {
-      navigate(user?.role === 'agent' ? '/agent/dashboard' : '/customer/dashboard');
-    } else {
-      navigate('/login');
-    }
-  };
+  const handleGetStarted = () => navigate(getDashboardRoute());
+  const handleLogin = () => navigate(isAuthenticated ? getDashboardRoute() : '/login');
 
   return (
     <div className="home-page">
@@ -50,14 +40,15 @@ const Home = () => {
       <nav className={`home-navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-container">
           <div className="navbar-brand" onClick={() => navigate('/')}>
-            <img src={logo} alt="SupportFlow" className="navbar-logo" />
-            <span>SupportFlow</span>
+            <img src={logo} alt="AssistFlow" className="navbar-logo" />
+            <span>AssistFlow</span>
           </div>
 
           <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
             <a href="#home" className="nav-link">Home</a>
             <a href="#features" className="nav-link">Features</a>
             <a href="#how-it-works" className="nav-link">How It Works</a>
+            <a href="#ai-examples" className="nav-link">AI Examples</a>
             <a href="#about" className="nav-link">About</a>
             <button className="nav-btn-login" onClick={handleLogin}>
               {isAuthenticated ? 'Dashboard' : 'Login'}
@@ -67,10 +58,7 @@ const Home = () => {
             </button>
           </div>
 
-          <button 
-            className="mobile-menu-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -144,7 +132,7 @@ const Home = () => {
                 <div className="preview-dots">
                   <span></span><span></span><span></span>
                 </div>
-                <span className="preview-title">SupportFlow Dashboard</span>
+                <span className="preview-title">AssistFlow Dashboard</span>
               </div>
               <div className="preview-body">
                 <div className="preview-sidebar">
@@ -155,18 +143,9 @@ const Home = () => {
                 <div className="preview-main">
                   <h4>Good Morning, Laiba</h4>
                   <div className="preview-stats">
-                    <div className="stat-box">
-                      <span>Total</span>
-                      <strong>12</strong>
-                    </div>
-                    <div className="stat-box">
-                      <span>Open</span>
-                      <strong>3</strong>
-                    </div>
-                    <div className="stat-box">
-                      <span>Resolved</span>
-                      <strong>5</strong>
-                    </div>
+                    <div className="stat-box"><span>Total</span><strong>12</strong></div>
+                    <div className="stat-box"><span>Open</span><strong>3</strong></div>
+                    <div className="stat-box"><span>Resolved</span><strong>5</strong></div>
                   </div>
                   <div className="preview-ticket">
                     <div className="ticket-row">
@@ -189,7 +168,6 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Floating Cards */}
             <div className="floating-card card-ai">
               <Bot size={20} />
               <div>
@@ -220,27 +198,19 @@ const Home = () => {
             <div className="workflow-moving-dot"></div>
             
             <div className="workflow-step">
-              <div className="step-icon">
-                <Ticket size={20} />
-              </div>
+              <div className="step-icon"><Ticket size={20} /></div>
               <span>Customer Submits</span>
             </div>
             <div className="workflow-step">
-              <div className="step-icon">
-                <Bot size={20} />
-              </div>
+              <div className="step-icon"><Bot size={20} /></div>
               <span>AI Triage</span>
             </div>
             <div className="workflow-step">
-              <div className="step-icon">
-                <MessageSquare size={20} />
-              </div>
+              <div className="step-icon"><MessageSquare size={20} /></div>
               <span>Agent Responds</span>
             </div>
             <div className="workflow-step">
-              <div className="step-icon">
-                <CheckCircle size={20} />
-              </div>
+              <div className="step-icon"><CheckCircle size={20} /></div>
               <span>Ticket Resolved</span>
             </div>
           </div>
@@ -251,59 +221,41 @@ const Home = () => {
       <section className="features-section" id="features" ref={featuresRef}>
         <div className="section-container">
           <div className="section-header">
-            <span className="section-tag">Why Choose SupportFlow?</span>
+            <span className="section-tag">Why Choose AssistFlow?</span>
             <h2 className="section-title">Everything You Need for Better Support</h2>
             <p className="section-subtitle">
-              From ticket management to team collaboration, we give you the tools 
-              to provide faster, smarter, and more efficient support.
+              From ticket management to team collaboration, we give you the tools to provide faster, smarter support.
             </p>
           </div>
 
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon">
-                <Bot size={28} />
-              </div>
+              <div className="feature-icon"><Bot size={28} /></div>
               <h3>AI Ticket Triage</h3>
               <p>AI suggests category, priority, and a short summary automatically.</p>
             </div>
-
             <div className="feature-card">
-              <div className="feature-icon">
-                <MessageSquare size={28} />
-              </div>
+              <div className="feature-icon"><MessageSquare size={28} /></div>
               <h3>Real-Time Communication</h3>
               <p>Exchange messages without refreshing — instant updates on both sides.</p>
             </div>
-
             <div className="feature-card">
-              <div className="feature-icon">
-                <Ticket size={28} />
-              </div>
+              <div className="feature-icon"><Ticket size={28} /></div>
               <h3>Ticket Management</h3>
               <p>Create, assign, track, and resolve support tickets seamlessly.</p>
             </div>
-
             <div className="feature-card">
-              <div className="feature-icon">
-                <Lock size={28} />
-              </div>
+              <div className="feature-icon"><Lock size={28} /></div>
               <h3>Secure Authentication</h3>
-              <p>Separate protected areas for customers and agents with JWT.</p>
+              <p>Separate protected areas for customers, agents, and admins.</p>
             </div>
-
             <div className="feature-card">
-              <div className="feature-icon">
-                <Clock size={28} />
-              </div>
+              <div className="feature-icon"><Clock size={28} /></div>
               <h3>Ticket History</h3>
               <p>All conversations persist in the database for complete records.</p>
             </div>
-
             <div className="feature-card">
-              <div className="feature-icon">
-                <BarChart3 size={28} />
-              </div>
+              <div className="feature-icon"><BarChart3 size={28} /></div>
               <h3>Dashboard Analytics</h3>
               <p>View real-time ticket statistics based on actual data.</p>
             </div>
@@ -328,30 +280,137 @@ const Home = () => {
               <h3>Submit Your Issue</h3>
               <p>Create a support ticket with subject, description, and optional category.</p>
             </div>
-            <div className="step-arrow">
-              <ArrowRight size={24} />
-            </div>
+            <div className="step-arrow"><ArrowRight size={24} /></div>
             <div className="step-card">
               <div className="step-number">2</div>
               <h3>AI Analyzes</h3>
               <p>AI suggests category, priority, and a summary of your issue.</p>
             </div>
-            <div className="step-arrow">
-              <ArrowRight size={24} />
-            </div>
+            <div className="step-arrow"><ArrowRight size={24} /></div>
             <div className="step-card">
               <div className="step-number">3</div>
               <h3>Agent Responds</h3>
               <p>Agent reviews AI suggestions, replies, and updates ticket status.</p>
             </div>
-            <div className="step-arrow">
-              <ArrowRight size={24} />
-            </div>
+            <div className="step-arrow"><ArrowRight size={24} /></div>
             <div className="step-card">
               <div className="step-number">4</div>
               <h3>Issue Resolved</h3>
               <p>Agent provides resolution note and marks ticket as resolved.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Examples Section - NEW */}
+      <section className="ai-examples-section" id="ai-examples">
+        <div className="section-container">
+          <div className="section-header">
+            <span className="section-tag">AI Assistant Examples</span>
+            <h2 className="section-title">See How AI Helps Agents & Customers</h2>
+            <p className="section-subtitle">
+              AI responds in the same language as the user's question — English, Urdu, or Roman Urdu.
+              Simple, clear, and professional answers every time.
+            </p>
+          </div>
+
+          <div className="ai-examples-grid">
+            {/* Agent AI Examples */}
+            <div className="ai-example-column">
+              <div className="ai-example-header">
+                <div className="ai-example-icon agent"><Shield size={20} /></div>
+                <div>
+                  <h3>Agent AI</h3>
+                  <p>AI assistance for support agents</p>
+                </div>
+              </div>
+
+              <div className="ai-example-cards">
+                <div className="ai-example-card">
+                  <div className="q-line">
+                    <span className="q-icon">Q</span>
+                    <p>Customer ka login nahi ho raha, first step kya hai?</p>
+                  </div>
+                  <div className="a-line">
+                    <span className="a-icon">A</span>
+                    <p>Pehle customer se error message aur registered email confirm karein. Phir password reset ya account status check karein.</p>
+                  </div>
+                </div>
+
+                <div className="ai-example-card">
+                  <div className="q-line">
+                    <span className="q-icon">Q</span>
+                    <p>Customer ka payment fail ho raha hai, kya karun?</p>
+                  </div>
+                  <div className="a-line">
+                    <span className="a-icon">A</span>
+                    <p>Payment error message check karein, transaction status verify karein aur customer se payment method confirm karein.</p>
+                  </div>
+                </div>
+
+                <div className="ai-example-card">
+                  <div className="q-line">
+                    <span className="q-icon">Q</span>
+                    <p>Ticket ki priority kya honi chahiye?</p>
+                  </div>
+                  <div className="a-line">
+                    <span className="a-icon">A</span>
+                    <p>Issue ke impact aur urgency ko dekh kar priority assign karein. High-impact issues ko higher priority di ja sakti hai.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customer AI Examples */}
+            <div className="ai-example-column">
+              <div className="ai-example-header">
+                <div className="ai-example-icon customer"><Users size={20} /></div>
+                <div>
+                  <h3>Customer AI</h3>
+                  <p>AI assistance for customers</p>
+                </div>
+              </div>
+
+              <div className="ai-example-cards">
+                <div className="ai-example-card">
+                  <div className="q-line">
+                    <span className="q-icon">Q</span>
+                    <p>Mera ticket kis status mein hai?</p>
+                  </div>
+                  <div className="a-line">
+                    <span className="a-icon">A</span>
+                    <p>Aapke ticket ka current status dashboard par show ho raha hai.</p>
+                  </div>
+                </div>
+
+                <div className="ai-example-card">
+                  <div className="q-line">
+                    <span className="q-icon">Q</span>
+                    <p>Mera issue kab solve hoga?</p>
+                  </div>
+                  <div className="a-line">
+                    <span className="a-icon">A</span>
+                    <p>Aapke ticket ki progress aur assigned agent ke updates ke mutabiq information di ja sakti hai.</p>
+                  </div>
+                </div>
+
+                <div className="ai-example-card">
+                  <div className="q-line">
+                    <span className="q-icon">Q</span>
+                    <p>Mera issue solve nahi hua, kya karun?</p>
+                  </div>
+                  <div className="a-line">
+                    <span className="a-icon">A</span>
+                    <p>Apne ticket mein updated details add karein ya agent ko follow-up message bhejein.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ai-note-banner">
+            <Sparkles size={16} />
+            <span>AI always responds in the same language as the user's question — English, Urdu, or Roman Urdu.</span>
           </div>
         </div>
       </section>
@@ -401,35 +460,29 @@ const Home = () => {
         </div>
       </section>
 
-      {/* User Areas */}
+      {/* User Areas - UPDATED with Admin */}
       <section className="user-areas-section">
         <div className="section-container">
           <div className="section-header">
             <span className="section-tag">For Everyone</span>
-            <h2 className="section-title">Two Powerful Experiences</h2>
+            <h2 className="section-title">Three Powerful Experiences</h2>
           </div>
 
-          <div className="user-areas-grid">
+          <div className="user-areas-grid three-cols">
             <div className="user-area-card customer">
-              <div className="user-area-icon">
-                <Users size={32} />
-              </div>
+              <div className="user-area-icon"><Users size={32} /></div>
               <h3>For Customers</h3>
               <ul>
                 <li><CheckCircle size={16} /> Create support tickets</li>
                 <li><CheckCircle size={16} /> View ticket status</li>
-                <li><CheckCircle size={16} /> Exchange messages with agents</li>
-                <li><CheckCircle size={16} /> View conversation history</li>
+                <li><CheckCircle size={16} /> Chat with agents</li>
+                <li><CheckCircle size={16} /> View history</li>
               </ul>
-              <button className="btn-area" onClick={() => navigate('/register')}>
-                Start as Customer
-              </button>
+              <button className="btn-area" onClick={() => navigate('/register')}>Start as Customer</button>
             </div>
 
             <div className="user-area-card agent">
-              <div className="user-area-icon">
-                <Shield size={32} />
-              </div>
+              <div className="user-area-icon"><Shield size={32} /></div>
               <h3>For Agents</h3>
               <ul>
                 <li><CheckCircle size={16} /> View assigned tickets</li>
@@ -437,9 +490,19 @@ const Home = () => {
                 <li><CheckCircle size={16} /> Reply to customers</li>
                 <li><CheckCircle size={16} /> Resolve with notes</li>
               </ul>
-              <button className="btn-area" onClick={() => navigate('/register')}>
-                Start as Agent
-              </button>
+              <button className="btn-area" onClick={() => navigate('/register')}>Start as Agent</button>
+            </div>
+
+            <div className="user-area-card admin">
+              <div className="user-area-icon"><Crown size={32} /></div>
+              <h3>For Admins</h3>
+              <ul>
+                <li><CheckCircle size={16} /> Manage all users</li>
+                <li><CheckCircle size={16} /> Reassign tickets</li>
+                <li><CheckCircle size={16} /> View all tickets</li>
+                <li><CheckCircle size={16} /> Full system control</li>
+              </ul>
+              <button className="btn-area" onClick={() => navigate('/login')}>Admin Login</button>
             </div>
           </div>
         </div>
@@ -462,8 +525,8 @@ const Home = () => {
         <div className="footer-container">
           <div className="footer-brand">
             <div className="footer-logo">
-              <img src={logo} alt="SupportFlow" />
-              <span>SupportFlow</span>
+              <img src={logo} alt="AssistFlow" />
+              <span>AssistFlow</span>
             </div>
             <p>AI-powered customer support ticketing system for modern teams.</p>
           </div>
@@ -473,6 +536,7 @@ const Home = () => {
               <h4>Product</h4>
               <a href="#features">Features</a>
               <a href="#how-it-works">How It Works</a>
+              <a href="#ai-examples">AI Examples</a>
               <a href="#about">About</a>
             </div>
             <div className="footer-col">
@@ -484,7 +548,7 @@ const Home = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2026 SupportFlow. All rights reserved.</p>
+          <p>© 2026 AssistFlow. All rights reserved.</p>
           <p>Built with ❤️ for AI Factory 2.0 Hackathon</p>
         </div>
       </footer>

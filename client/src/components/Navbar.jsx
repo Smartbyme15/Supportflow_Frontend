@@ -1,7 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, Home as HomeIcon } from 'lucide-react';
 import logo from '../assets/images/logo.png';
 import './Navbar.css';
 
@@ -11,7 +11,13 @@ const Navbar = ({ sidebarOpen, toggleSidebar }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
+  };
+
+  const getDashboardRoute = () => {
+    if (user?.role === 'admin') return '/admin/dashboard';
+    if (user?.role === 'agent') return '/agent/dashboard';
+    return '/customer/dashboard';
   };
 
   return (
@@ -20,13 +26,18 @@ const Navbar = ({ sidebarOpen, toggleSidebar }) => {
         <button className="navbar-toggle" onClick={toggleSidebar}>
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <div className="navbar-brand">
+        <div className="navbar-brand" onClick={() => navigate(getDashboardRoute())}>
           <img src={logo} alt="AssistFlow" className="navbar-logo" />
           <span className="brand-text">AssistFlow</span>
         </div>
       </div>
 
       <div className="navbar-right">
+        <Link to="/" className="navbar-home-link" title="Home">
+          <HomeIcon size={18} />
+          <span>Home</span>
+        </Link>
+        
         <div className="navbar-user">
           <div className="user-avatar">
             {user?.name?.charAt(0).toUpperCase()}

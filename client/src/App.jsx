@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -22,6 +22,7 @@ import './App.css';
 function AppContent() {
   const { user, isAuthenticated, loading, isAdmin, isAgent } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -38,18 +39,19 @@ function AppContent() {
   }
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const getDashboardRoute = () => {
-    if (isAdmin) return '/admin/dashboard';
-    if (isAgent) return '/agent/dashboard';
-    return '/customer/dashboard';
-  };
+
+  // Show navbar/sidebar on ALL routes when authenticated, EXCEPT on home page
+  const isHomePage = location.pathname === '/';
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  
+  const showDashboardLayout = isAuthenticated && !isHomePage && !isAuthPage;
 
   return (
     <div className="app">
-      {isAuthenticated && <Navbar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />}
+      {showDashboardLayout && <Navbar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />}
       <div className="app-body">
-        {isAuthenticated && <Sidebar isOpen={sidebarOpen} />}
-        <main className={`main-content ${!sidebarOpen ? 'expanded' : ''} ${!isAuthenticated ? 'public' : ''}`}>
+        {showDashboardLayout && <Sidebar isOpen={sidebarOpen} />}
+        <main className={`main-content ${!sidebarOpen ? 'expanded' : ''} ${!showDashboardLayout ? 'public' : ''}`}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
@@ -98,7 +100,7 @@ function AppContent() {
               <ProtectedRoute allowedRoles={['admin']}><AdminTickets /></ProtectedRoute>
             } />
             <Route path="/admin/tickets/:id" element={
-              <ProtectedRoute allowedRoles={['admin', 'agent', 'customer']}><TicketDetail /></ProtectedRoute>
+              <ProtectedRoute allowedRoles={['admin', 'agent']}><TicketDetail /></ProtectedRoute>
             } />
             
             <Route path="*" element={
