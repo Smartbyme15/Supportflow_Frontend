@@ -18,7 +18,13 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      navigate(user.role === 'agent' ? '/agent/dashboard' : '/customer/dashboard');
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'agent') {
+        navigate('/agent/dashboard');
+      } else {
+        navigate('/customer/dashboard');
+      }
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -48,7 +54,7 @@ const Login = () => {
             
             {/* Role Info - Left Side */}
             <div className="brand-role-info">
-              <p className="brand-role-title">Two Dashboards Available</p>
+              <p className="brand-role-title">Three Dashboards Available</p>
               <div className="brand-role-list">
                 <div className="brand-role-item">
                   <span className="brand-role-icon">→</span>
@@ -62,6 +68,13 @@ const Login = () => {
                   <div>
                     <strong>Agent Dashboard</strong>
                     <span>Manage and resolve tickets</span>
+                  </div>
+                </div>
+                <div className="brand-role-item">
+                  <span className="brand-role-icon">→</span>
+                  <div>
+                    <strong>Admin Dashboard</strong>
+                    <span>Manage all users and tickets</span>
                   </div>
                 </div>
               </div>

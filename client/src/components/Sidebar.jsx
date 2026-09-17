@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +8,7 @@ import {
   PlusCircle,
   BarChart3,
   Bot,
+  Users,
   LogOut
 } from 'lucide-react';
 import logo from '../assets/images/logo.png';
@@ -16,6 +18,7 @@ const Sidebar = ({ isOpen }) => {
   const { user, logout } = useAuth();
   const isAgent = user?.role === 'agent';
   const isCustomer = user?.role === 'customer';
+  const isAdmin = user?.role === 'admin';
 
   const customerLinks = [
     { to: '/customer/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -30,7 +33,13 @@ const Sidebar = ({ isOpen }) => {
     { to: '/agent/ai-chat', icon: Bot, label: 'AI Assistant' },
   ];
 
-  const links = isAgent ? agentLinks : customerLinks;
+  const adminLinks = [
+    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/admin/users', icon: Users, label: 'Users' },
+    { to: '/admin/tickets', icon: Ticket, label: 'All Tickets' },
+  ];
+
+  const links = isAdmin ? adminLinks : (isAgent ? agentLinks : customerLinks);
 
   return (
     <aside className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>

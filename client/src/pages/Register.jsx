@@ -24,7 +24,13 @@ const Register = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      navigate(user.role === 'agent' ? '/agent/dashboard' : '/customer/dashboard');
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'agent') {
+        navigate('/agent/dashboard');
+      } else {
+        navigate('/customer/dashboard');
+      }
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -88,6 +94,13 @@ const Register = () => {
                   <div>
                     <strong>Agent</strong>
                     <span>Manage and resolve tickets</span>
+                  </div>
+                </div>
+                <div className="brand-role-item">
+                  <span className="brand-role-icon">→</span>
+                  <div>
+                    <strong>Admin</strong>
+                    <span>Full system access (by invitation)</span>
                   </div>
                 </div>
               </div>

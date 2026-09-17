@@ -94,6 +94,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     isCustomer: user?.role === 'customer',
     isAgent: user?.role === 'agent',
+    isAdmin: user?.role === 'admin',
   };
 
   return (
